@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var handler = require('../web/request-handler.js');
+var fetcher = require('../workers/htmlfetcher.js');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -35,15 +36,6 @@ exports.readListOfUrls = function(callback) {
       callback(content);
     }
   });
-
-  // fs.readFile(this.paths.list, 'utf8', function(err, content) {
-  //   if (err) {
-  //     console.error(err);
-  //     res.end();
-  //   } else {
-  //     this.isUrlInList(content, url, res);
-  //   }
-  // }.bind(this));
 };
 
 exports.isUrlInList = function(url, callback) {
@@ -54,12 +46,6 @@ exports.isUrlInList = function(url, callback) {
       callback(false);
     }
   }); 
-  // content = content.split(' ');
-  // if (_.indexOf(content, url) === -1) {
-  //   this.addUrlToList(url, res);
-  // } else {
-  //   //do something
-  // }
 };
 
 exports.addUrlToList = function(url, callback) {
@@ -73,29 +59,28 @@ exports.addUrlToList = function(url, callback) {
         } else {
           callback();
         }
-      }.bind(this));
+      });
     }
   }.bind(this));
-  // console.log('$$$$url', url);
-  // fs.appendFile(this.paths.list, url + '\n', function(err) {
-  //   if (err) {
-  //     console.error(err);
-  //   }
-  //   res.writeHead(302);
-  //   res.end();
-  // });
 };
 
 exports.isUrlArchived = function(url, callback) {
-  // return callback(url);
+  fs.stat(this.paths.list + url, function(err, stats) {
+    if (!err) {
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
 };
 
-exports.downloadUrls = function(req, res, url) {
-  //delegate to worker
-    //add url to list
+exports.downloadUrls = function(url) {
+  _.each(function(url) {
+    fetcher.getIndex(url, function(data) {
+      // url 
+      // now we have the data, so we want to read and save
+      // create index 
+      // remove from list
+    });
+  });
 };
-
-exports.serveFile = function(url) {
-  return this.paths.archivedSites + url;
-};
-

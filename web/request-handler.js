@@ -13,52 +13,38 @@ exports.handleRequest = function (req, res) {
       res.writeHead(404);
       console.error(err);
       res.end();
-      return;
     } else {
-      res.writeHead(200);
-      console.log('writting page:', content);
+      res.writeHead(200, http.headers);
       res.write(content);
       res.end();
     }
-  };
-  var endThisPlease = function(){
-    res.end();
   };
   var url = req.url;
   var method = req.method;
   console.log('requesting:' + method + ' at:' + url);
   if (method === 'GET') {
     if (url === '/') {
-      fs.readFile(archive.paths.siteAssets + '/index.html', readStaticFileCallback);
+      http.serveAssets(archive.paths.siteAssets + '/index.html', readStaticFileCallback);
     } else if (url === '/styles.css') {
-      fs.readFile(archive.paths.siteAssets + '/styles.css', readStaticFileCallback);
+      http.serveAssets(archive.paths.siteAssets + '/styles.css', readStaticFileCallback);
     } else if (url === '/favicon.ico') {
       res.end();
     } else {
-      fs.readFile(archive.paths.archivedSites + url, readStaticFileCallback);
-      // http.serveAssets(res, archive.paths.archivedSites + url, function(err, data){
-      //   res.writeHead(200);
-      //   res.write(data);
-      //   res.end();
-      // });
+      http.serveAssets(archive.paths.archivedSites + url, readStaticFileCallback);
     }
   } else if (method === 'POST') {
     var jsonString = '';
-
     req.on('data', function (data) {
       jsonString += data;
     });
 
     req.on('end', function () {
       jsonString = jsonString.toString('ascii').slice(4);
-      console.log('data: ', jsonString);
-      // archive.readListOfUrls(function(content) {
-      //   if (content === undefined) {
-      //     res.end();
-      //   } else {
-          
-      //   }
-      // }, res);
+      // console.log('data: ', jsonString);
+      archive.addUrlToList(jsonString, function() {
+        res.writeHead(302, http.headers);
+        res.end();
+      });
     });
   }
 };

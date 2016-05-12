@@ -11,6 +11,7 @@ var ip = '127.0.0.1';
 var server = http.createServer(handler.handleRequest);
 //Look into what this means (module.parent) and why we have cases here
 if (module.parent) {
+  console.log('parent');
   module.exports = server;
 } else {
   server.listen(port, ip);
