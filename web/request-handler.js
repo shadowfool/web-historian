@@ -41,10 +41,22 @@ exports.handleRequest = function (req, res) {
     req.on('end', function () {
       jsonString = jsonString.toString('ascii').slice(4);
       // console.log('data: ', jsonString);
-      archive.addUrlToList(jsonString, function() {
-        res.writeHead(302, http.headers);
-        res.end();
+      archive.isUrlArchived(jsonString, function(truthyValue) {
+        console.log(truthyValue, jsonString);
+        if (!truthyValue) {
+          archive.addUrlToList(jsonString, function(message) {
+            console.log(message);
+          });
+        } else {
+          http.serveAssets(archive.paths.archivedSites + '/' + jsonString, readStaticFileCallback);
+        }
       });
+      // else{
+      //   archive.addUrlToList(jsonString, function() {
+      //     res.writeHead(302, http.headers);
+      //     res.end();
+      //   });
+      // }
     });
   }
 };

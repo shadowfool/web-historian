@@ -51,13 +51,13 @@ exports.isUrlInList = function(url, callback) {
 exports.addUrlToList = function(url, callback) {
   this.isUrlInList(url, function(value) {
     if (value === true) {
-      callback();
+      callback('Already in List');
     } else {
       fs.appendFile(this.paths.list, url + '\n', function(err) {
         if (err) {
           console.log(err);
         } else {
-          callback();
+          callback('Added to List');
         }
       });
     }
@@ -65,7 +65,8 @@ exports.addUrlToList = function(url, callback) {
 };
 
 exports.isUrlArchived = function(url, callback) {
-  fs.stat(this.paths.list + url, function(err, stats) {
+  console.log(this.paths.archivedSites + '/' + url);
+  fs.stat(this.paths.archivedSites + '/' + url, function(err, stats) {
     if (!err) {
       callback(true);
     } else {
@@ -74,13 +75,28 @@ exports.isUrlArchived = function(url, callback) {
   });
 };
 
-exports.downloadUrls = function(url) {
-  _.each(function(url) {
+exports.downloadUrls = function(urls) {
+  _.each(urls, function(url) {
     fetcher.getIndex(url, function(data) {
-      // url 
-      // now we have the data, so we want to read and save
-      // create index 
-      // remove from list
-    });
-  });
+      fs.writeFile(this.paths.archivedSites + '/' + url, data, {encoding:'utf8'}, function(err) {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log('file saved');
+          this.readListOfUrls(function(urls) {
+            var urlIndex = _.indexOf(urls, url); 
+            urls.splice(urlIndex, 1);
+            urls = urls.join('\n');
+            fs.writeFile(this.paths.list, urls, function(err) {
+              if (err) {
+                console.error(err);
+              } else {
+                console.log('item removed');
+              }
+            });
+          }.bind(this));
+        }
+      }.bind(this));
+    }.bind(this));
+  }.bind(this));
 };

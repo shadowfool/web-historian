@@ -2,7 +2,7 @@ var archive = require('../helpers/archive-helpers');
 var http = require('http');
 // must export 
 exports.getIndex = function(url, callback) {
-  http.get({host: url, path: '/index.html'}, function(res) {
+  http.get({host: url, path: '/'}, function(res) {
     var index = '';
     res.on('data', function(d) {
       index += d;
