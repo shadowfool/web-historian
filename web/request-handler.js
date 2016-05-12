@@ -50,10 +50,15 @@ exports.handleRequest = function (req, res) {
     });
 
     req.on('end', function () {
-      console.log('data ', jsonString);
       jsonString = jsonString.toString('ascii').slice(4);
-      console.log('json: ', jsonString);
-      archive.readListOfUrls(req, res, jsonString);
+      console.log('data: ', jsonString);
+      // archive.readListOfUrls(function(content) {
+      //   if (content === undefined) {
+      //     res.end();
+      //   } else {
+          
+      //   }
+      // }, res);
     });
   }
 };

@@ -26,39 +26,68 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(req, res, url) {
+exports.readListOfUrls = function(callback) {
   fs.readFile(this.paths.list, 'utf8', function(err, content) {
     if (err) {
-      console.error(err);
-      res.end();
+      callback();
     } else {
-      this.isUrlInList(content, url, res);
+      content = content.split('\n');
+      callback(content);
+    }
+  });
+
+  // fs.readFile(this.paths.list, 'utf8', function(err, content) {
+  //   if (err) {
+  //     console.error(err);
+  //     res.end();
+  //   } else {
+  //     this.isUrlInList(content, url, res);
+  //   }
+  // }.bind(this));
+};
+
+exports.isUrlInList = function(url, callback) {
+  this.readListOfUrls(function(content) {
+    if (_.indexOf(content, url) >= 0) {
+      callback(true);
+    } else {
+      callback(false);
+    }
+  }); 
+  // content = content.split(' ');
+  // if (_.indexOf(content, url) === -1) {
+  //   this.addUrlToList(url, res);
+  // } else {
+  //   //do something
+  // }
+};
+
+exports.addUrlToList = function(url, callback) {
+  this.isUrlInList(url, function(value) {
+    if (value === true) {
+      callback();
+    } else {
+      fs.appendFile(this.paths.list, url + '\n', function(err) {
+        if (err) {
+          console.log(err);
+        } else {
+          callback();
+        }
+      }.bind(this));
     }
   }.bind(this));
-};
-
-exports.isUrlInList = function(content, url, res) {
-  content = content.split(' ');
-  if (_.indexOf(content, url) === -1) {
-    this.addUrlToList(url, res);
-  } else {
-    //do something
-  }
-};
-
-exports.addUrlToList = function(url, res) {
-  console.log('$$$$url', url);
-  fs.appendFile(this.paths.list, url + '\n', function(err) {
-    if (err) {
-      console.error(err);
-    }
-    res.writeHead(302);
-    res.end();
-  });
+  // console.log('$$$$url', url);
+  // fs.appendFile(this.paths.list, url + '\n', function(err) {
+  //   if (err) {
+  //     console.error(err);
+  //   }
+  //   res.writeHead(302);
+  //   res.end();
+  // });
 };
 
 exports.isUrlArchived = function(url, callback) {
-  return callback(url);
+  // return callback(url);
 };
 
 exports.downloadUrls = function(req, res, url) {
