@@ -57,8 +57,8 @@ exports.addUrlToList = function(url, res) {
   });
 };
 
-exports.isUrlArchived = function(req, res, url) {
-
+exports.isUrlArchived = function(url, callback) {
+  return callback(url);
 };
 
 exports.downloadUrls = function(req, res, url) {

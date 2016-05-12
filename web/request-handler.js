@@ -36,6 +36,11 @@ exports.handleRequest = function (req, res) {
       res.end();
     } else {
       fs.readFile(archive.paths.archivedSites + url, readStaticFileCallback);
+      // http.serveAssets(res, archive.paths.archivedSites + url, function(err, data){
+      //   res.writeHead(200);
+      //   res.write(data);
+      //   res.end();
+      // });
     }
   } else if (method === 'POST') {
     var jsonString = '';
@@ -45,7 +50,9 @@ exports.handleRequest = function (req, res) {
     });
 
     req.on('end', function () {
+      console.log('data ', jsonString);
       jsonString = jsonString.toString('ascii').slice(4);
+      console.log('json: ', jsonString);
       archive.readListOfUrls(req, res, jsonString);
     });
   }
