@@ -9,7 +9,7 @@ initialize('./archives');
 var port = 8080;
 var ip = '127.0.0.1';
 var server = http.createServer(handler.handleRequest);
-
+//Look into what this means (module.parent) and why we have cases here
 if (module.parent) {
   module.exports = server;
 } else {

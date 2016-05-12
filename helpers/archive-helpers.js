@@ -28,14 +28,23 @@ exports.initialize = function(pathsObj) {
 exports.readListOfUrls = function() {
 };
 
-exports.isUrlInList = function() {
+exports.isUrlInList = function(req, res, url) {
+  
 };
 
 exports.addUrlToList = function() {
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlArchived = function(req, res, url) {
+
 };
 
 exports.downloadUrls = function() {
+  //delegate to worker
+    //add url to list
 };
+
+exports.serveFile = function(url) {
+  return this.paths.archivedSites + url;
+};
+
