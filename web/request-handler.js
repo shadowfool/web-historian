@@ -16,9 +16,13 @@ exports.handleRequest = function (req, res) {
       return;
     } else {
       res.writeHead(200);
+      console.log('writting page:', content);
       res.write(content);
       res.end();
     }
+  };
+  var endThisPlease = function(){
+    res.end();
   };
   var url = req.url;
   var method = req.method;
@@ -34,6 +38,15 @@ exports.handleRequest = function (req, res) {
       fs.readFile(archive.paths.archivedSites + url, readStaticFileCallback);
     }
   } else if (method === 'POST') {
-    archive.isUrlInList(req, res, url);
+    var jsonString = '';
+
+    req.on('data', function (data) {
+      jsonString += data;
+    });
+
+    req.on('end', function () {
+      jsonString = jsonString.toString('ascii').slice(4);
+      archive.readListOfUrls(req, res, jsonString);
+    });
   }
 };

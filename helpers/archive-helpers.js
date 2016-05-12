@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var handler = require('../web/request-handler.js');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -25,21 +26,42 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function() {
+exports.readListOfUrls = function(req, res, url) {
+  fs.readFile(this.paths.list, 'utf8', function(err, content) {
+    if (err) {
+      console.error(err);
+      res.end();
+    } else {
+      this.isUrlInList(content, url, res);
+    }
+  }.bind(this));
 };
 
-exports.isUrlInList = function(req, res, url) {
-  
+exports.isUrlInList = function(content, url, res) {
+  content = content.split(' ');
+  if (_.indexOf(content, url) === -1) {
+    this.addUrlToList(url, res);
+  } else {
+    //do something
+  }
 };
 
-exports.addUrlToList = function() {
+exports.addUrlToList = function(url, res) {
+  console.log('$$$$url', url);
+  fs.appendFile(this.paths.list, url + '\n', function(err) {
+    if (err) {
+      console.error(err);
+    }
+    res.writeHead(302);
+    res.end();
+  });
 };
 
 exports.isUrlArchived = function(req, res, url) {
 
 };
 
-exports.downloadUrls = function() {
+exports.downloadUrls = function(req, res, url) {
   //delegate to worker
     //add url to list
 };
