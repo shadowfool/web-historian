@@ -3,6 +3,8 @@ var path = require('path');
 var _ = require('underscore');
 var handler = require('../web/request-handler.js');
 var fetcher = require('../workers/htmlfetcher.js');
+var cron = require('../cron.js');
+
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -30,7 +32,7 @@ exports.initialize = function(pathsObj) {
 exports.readListOfUrls = function(callback) {
   fs.readFile(this.paths.list, 'utf8', function(err, content) {
     if (err) {
-      callback();
+      console.error(err);
     } else {
       content = content.split('\n');
       callback(content);
@@ -76,6 +78,7 @@ exports.isUrlArchived = function(url, callback) {
 };
 
 exports.downloadUrls = function(urls) {
+  console.log(urls);
   _.each(urls, function(url) {
     fetcher.getIndex(url, function(data) {
       fs.writeFile(this.paths.archivedSites + '/' + url, data, {encoding:'utf8'}, function(err) {
@@ -84,11 +87,13 @@ exports.downloadUrls = function(urls) {
         } else {
           console.log('file saved');
           this.readListOfUrls(function(urls) {
+            console.log('err 2');
             var urlIndex = _.indexOf(urls, url); 
             urls.splice(urlIndex, 1);
             urls = urls.join('\n');
             fs.writeFile(this.paths.list, urls, function(err) {
               if (err) {
+                console.log('err 1');
                 console.error(err);
               } else {
                 console.log('item removed');
@@ -100,3 +105,4 @@ exports.downloadUrls = function(urls) {
     }.bind(this));
   }.bind(this));
 };
+

@@ -10,6 +10,8 @@ exports.getIndex = function(url, callback) {
     res.on('end', function(d) {
       callback(index);
     });
+  }).on('error', function(err){
+    console.error(err);
   });
   // downloads file
     //in callback when download is done
